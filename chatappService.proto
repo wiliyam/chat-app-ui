@@ -1,0 +1,48 @@
+
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.UnaryProto";
+option java_outer_classname = "chatappService";
+option objc_class_prefix = "HLW";
+
+package chatappService;
+
+// The sendEmail service definition.
+service chatappService {
+
+  rpc newUsr (req) returns (res) {}
+  
+  rpc subscribe (req) returns (stream res) {}
+
+  rpc sendSms (req) returns (res) {}
+  //send userinfi and getback zendekid
+  // rpc getTickets(req) returns (res) {}//send emailid and get back all tickets 
+  // rpc getTicketHistory(req) returns (res) {}//send id in message and get back ticket history
+  rpc joinServer (stream req) returns (stream res){}
+  // rpc postTicket(req) returns (res) {} //post new ticket
+  // rpc putTicketComments (req) returns (res) {} //put commect on ticket
+}
+
+message req {
+  string message=1;
+}
+
+message res {
+  string message=1;
+}
+//define communication message types 
+
+// //for get user
+// message getUserRes {
+//   string zendeskId = 1;
+// }
+
+// message getUserReq {
+//   string name=1;
+//   string email=2;
+//   string type=3;
+// }
+
+
