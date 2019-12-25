@@ -1,0 +1,24 @@
+version: "2"
+services:
+  dse-server:
+    image: datastax/dse-server:6.7.2
+    command: [-s]
+    container_name: dse-server
+    environment:
+      DS_LICENSE: accept
+    ports:
+      - "9042:9042" # cassandra
+    volumes:
+      - "./data:/var/lib/cassandra"
+  dse-studio1:
+    image: datastax/dse-studio
+    command: [-s]
+    container_name: dse-studio1
+    environment:
+      DS_LICENSE: accept
+    ports:
+      - "9091:9091" # studiio port
+    depends_on:
+      - dse-server
+    volumes:
+      - "./data:/var/lib/cassandra"

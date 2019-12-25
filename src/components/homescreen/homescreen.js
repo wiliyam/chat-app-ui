@@ -7,7 +7,7 @@ import moment from "moment";
 import { chatappServiceClient } from "../../generated/chatappService_grpc_web_pb";
 import { req, res } from "../../generated/chatappService_pb";
 
-const client = new chatappServiceClient("http://localhost:3333", null, null);
+const client = new chatappServiceClient("https://api.4star.ga", null, null);
 
 let call;
 const HomePage = () => {

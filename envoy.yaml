@@ -42,4 +42,4 @@ static_resources:
       type: logical_dns
       http2_protocol_options: {}
       lb_policy: round_robin
-      hosts: [{ socket_address: { address: 192.168.0.104, port_value: 60051 } }]
+      hosts: [{ socket_address: { address: 13.233.6.179, port_value: 60051 } }]
