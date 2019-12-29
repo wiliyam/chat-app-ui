@@ -6,6 +6,7 @@ import moment from "moment";
 
 import { chatappServiceClient } from "../../generated/chatappService_grpc_web_pb";
 import { req, res } from "../../generated/chatappService_pb";
+import { stat } from "fs";
 
 const client = new chatappServiceClient("https://api.4star.ga", null, null);
 const request = new req();
@@ -16,7 +17,8 @@ const HomePage = () => {
   const [state, setState] = useState({
     name: "",
     token: "",
-    newMsg: []
+    newMsg: [],
+    connUser: []
   });
 
   const subscribe = async token => {
@@ -29,23 +31,29 @@ const HomePage = () => {
       token: token
     };
 
-    console.log("metadata", metadata);
     request.setMessage(JSON.stringify(reqData));
-    let callSub = client.subscribe(request, metadata, (err, response) => {});
-    callSub.on("data", res => {
+    let callStub = client.subscribe(request, metadata, (err, response) => {
+      // console.log("---", response);
+    });
+    console.log("metadata---", metadata);
+    callStub.on("data", res => {
       let response = JSON.parse(res.getMessage());
 
       setState({
+        ...state,
+        connUser: response.connUser,
         newMsg: response.newMsg
       });
-      console.log("response", response);
+      console.log("state...", state.connUser);
+      console.log("response----", response);
     });
-    setTimeout(() => {
-      console.log("timeout....");
-      callSub.on("cencel");
-    }, 2000);
-    callSub.on("end", a => {
-      console.log("server conn left...");
+    // setTimeout(() => {
+    //   console.log("timeout....");
+    //   callSub.;
+    // }, 2000);
+    callStub.on("end", a => {
+      console.log("session expire...trying to reconnect....");
+      subscribe(state.token);
     });
   };
 
@@ -60,6 +68,9 @@ const HomePage = () => {
     // Cookie.set("username", state.name);
     request.setMessage(JSON.stringify(reqData));
     call = client.newUsr(request, metadata, (err, response) => {
+      if (err) {
+        console.log("err", err);
+      }
       response = JSON.parse(response.getMessage());
       console.log("--", response);
       if (response.code == 409) {
@@ -68,10 +79,12 @@ const HomePage = () => {
           console.log("token not found...");
         }
         setState({
+          ...state,
           token: response.token
         });
       }
       setState({
+        ...state,
         token: response.token
       });
 
@@ -83,6 +96,7 @@ const HomePage = () => {
 
   const onNameChange = e => {
     setState({
+      ...state,
       name: e.target.value
     });
   };
@@ -92,7 +106,7 @@ const HomePage = () => {
       <div>
         <form className="form">
           <div className="form-group">
-            <label for="name">Name</label>
+            <label htmlFor="name">Name</label>
             <input
               type="text"
               value={state.name}
@@ -101,7 +115,7 @@ const HomePage = () => {
               id="name"
             ></input>
           </div>
-          <button type="button" class="btn btn-primary" onClick={onConn}>
+          <button type="button" className="btn btn-primary" onClick={onConn}>
             Submit
           </button>
           <ul>
